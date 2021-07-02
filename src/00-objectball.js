@@ -117,10 +117,11 @@ const gameObject = () => {
 }
 
 const gameData = gameObject(); //pulls in the dataset
-const players = playerObject();
-const team = Object.values(gameData);
-const homePlayers = homeTeam().players;
-const awayPlayers = awayTeam().players;
+const players = playerObject(); //pulls object of all playeres
+const team = Object.values(gameData); //array of team / away objects
+const homePlayers = homeTeam().players; //pulls object of all the home team players
+const awayPlayers = awayTeam().players; //pulls object of all the away team players
+const playerNameArray = Object.entries(playerObject()); //pulls array of players
 
 function playerObject(){
     return Object.assign({}, homeTeam().players, awayTeam().players);
@@ -144,9 +145,10 @@ const numPointsScored = name => {
 
 
 const shoeSize = name => {
-    const playerArrays = Object.entries(playerObject())//makes an array of the players
-    const playerName = playerArrays.find(playerArray => playerArray[0] === name);
-    return playerName[1].shoe;
+    //const playerArrays = Object.entries(playerObject())//makes an array of the players
+    //const playerName = playerArrays.find(playerArray => playerArray[0] === name);
+    //return playerName[1].shoe;
+    return players[name].shoe;
 }
 
 const teamColors = team => {
@@ -157,22 +159,33 @@ const teamColors = team => {
     }
 }
 
-const playerNumbers = team => {
-    let teamArray = []
 
-    if (team === homeTeam().teamName){
-        for (player in homePlayers) {
-            teamArray.push(homePlayers[player].number);
-
-            //homePlayers.reduce(player => )
-        }
-    } else {
-        for (player in awayPlayers) {
-            teamArray.push(awayPlayers[player].number);
+const teamNames = () => {
+    let teamArray = [];
+    for (group of team){ //for...of because team is an array
+        teamArray.push(group.teamName);
     }
-    return teamArray;
+    return teamArray; 
 }
+
+
+const playerNumbers = teamInput => {
+    let teamNumArray = []
+
+    if (teamInput === homeTeam().teamName){
+        for (player in homePlayers) {
+            teamNumArray.push(homePlayers[player].number);
+        }
+    } 
+    else if (teamInput === AwayTeam().teamName) {
+        for (player in awayPlayers) {
+            teamNumArray.push(awayPlayers[player].number);
+        }
+    }
+    
+    return teamNumArray;
 }
+
 
 
 const playerStats = nameInput => {
@@ -181,10 +194,97 @@ const playerStats = nameInput => {
 
 
 const biggestShoe = () => {
+    let bigShoeName;
+    let bigShoeSize = 0;
 
+    for (element in players){
+        if (players[element].shoe > bigShoeSize){
+            bigShoeSize = players[element].shoe;
+            bigShoeName = element;
+        } 
+    }
+    return bigShoeName
+}
+
+const bigShoeRebounds = nameInput => { //pass biggestShoe as argument
+    return players[nameInput].rebounds;
+}
+
+
+
+const mostPoinstScored = () => {
+    let mostPointsName;
+    let mostPoints = 0;
+
+    for (element in players){
+        if (players[element].points > mostPoints){
+            mostPoints = players[element].points;
+            mostPointsName = element;
+        } 
+    }
+    return mostPointsName
+}
+
+
+const winningTeam = () => {
+//is there a way to use reduce on each team to total points?
+//what is the most efficient way to solve this one?
+
+//reduce player.points
+
+    let winnerTeam;
+    let homeTotalPoints = 0;
+    let awayTotalPoints = 0;
+
+
+    for(player in homePlayers){
+        homeTotalPoints = homePlayers[player].points + homeTotalPoints
+    }
+
+    for(player in awayPlayers){
+        awayTotalPoints = awayPlayers[player].points + awayTotalPoints
+    }
+
+    if(homeTotalPoints > awayTotalPoints) {
+        winnerTeam = gameData.home.teamName
+    } else {
+        winnerTeam = gameData.away.teamName
+
+    }
+
+    return winnerTeam;
 
 }
 
-const bigShoeRebounds = () => {
 
+const playerWithLongestName = () => {
+    let longestName;
+    let mostChars = 0;
+
+    for (namePlayer of playerNameArray){
+        if (namePlayer[0].length > mostChars){
+            mostChars = namePlayer[0].length;
+            longestName = namePlayer[0];
+        } 
+    }
+    return longestName
+}
+
+const mostSteals = () => {
+    let mostStealsName;
+    let mostSteals = 0;
+
+    for (element in players){
+        if (players[element].steals > mostSteals){
+            mostSteals = players[element].steals;
+            mostStealsName = element;
+        } 
+    }
+    return mostStealsName
+}
+
+const doesLongNameStealATon = () => {
+    if(playerWithLongestName() === mostSteals()){
+        return true
+    }
 }
